@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Calendar;
+use App\Models\Event;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,13 +15,13 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run($number)
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::factory($number)->create()->each(function ($user) {
+            $id = $user->id;
+            Calendar::factory(2)->state(['user_id' => $id])->create()->each(function ($calendar) {
+                Event::factory(4)->state(['calendar_id' => $calendar->id])->create();
+            });
+        });
     }
 }

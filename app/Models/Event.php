@@ -13,6 +13,7 @@ class Event extends Model
         return $this->belongsTo(Calendar::class);
     }
     protected $fillable = [
+        'title',
         'start_time',
         'end_time',
         'description',
