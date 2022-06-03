@@ -7,6 +7,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,28 +15,11 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
     {
-
-        $school_id = $request->school_id ?? null;
-
-        if (!$school_id) {
-            return response()->json(['error' => 'Specify School id'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $school = School::find($school_id);
-        if (!$school) {
-            return response()->json(['error' => 'School not found'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($school->Email_Exists_within_School($request->email)) {
-            return response()->json(['error' => 'Email already registered within this school'], Response::HTTP_BAD_REQUEST);
-        }
-
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'school_id' => $school->id,
         ]);
 
         $token = $user->createToken('token')->plainTextToken;

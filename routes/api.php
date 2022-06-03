@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('/Calendar/register', [AuthController::class, 'register']);
-Route::post('/Calendar/login', [AuthController::class, 'login']);
-
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/Calendar/courses', [SchoolController::class, 'courses']);
