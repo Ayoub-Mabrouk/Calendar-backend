@@ -16,11 +16,13 @@ class EventFactory extends Factory
      */
     public function definition()
     {
+        $startingDate = $this->faker->dateTimeThisYear('-1 month', '+1 month');
+        $endingDate   = strtotime('+1 Week', $startingDate->getTimestamp());
         return [
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(2),
-            'start_time' => $this->faker->dateTimeBetween('-1 year', '+1 year'),
-            'end_time' => $this->faker->unique()->dateTimeBetween("now", "30 days")
+            'start_time' => $startingDate,
+            'end_time' => $endingDate,
         ];
     }
 }
