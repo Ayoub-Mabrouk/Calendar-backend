@@ -17,7 +17,7 @@ class EventFactory extends Factory
     public function definition()
     {
         $startingDate = $this->faker->dateTimeThisYear('-1 month', '+1 month');
-        $endingDate   = strtotime('+1 Week', $startingDate->getTimestamp());
+        $endingDate   =  $this->faker->dateTimeThisYear('+1 month', '+2 month');
         return [
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(2),

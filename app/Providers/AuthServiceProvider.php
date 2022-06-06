@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Calendar;
+use App\Models\Event;
+use App\Models\User;
+use App\Policies\CalendarPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,7 +17,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Calendar::class => CalendarPolicy::class,
+        Event::class => EventPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**
@@ -24,7 +30,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        //
+        Gate::define('view-calendar', [CalendarPolicy::class, 'view']);
+        Gate::define('delete-calendar', [CalendarPolicy::class, 'delete']);
+        Gate::define('store-event', 'App\Models\EventPolicy@store');
+        Gate::define('update-event', 'App\Models\EventPolicy@update');
+        Gate::define('delete-event', 'App\Models\EventPolicy@delete');
     }
 }

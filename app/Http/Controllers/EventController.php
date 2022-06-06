@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
@@ -69,7 +71,10 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        //
+        return response([
+            'message' => 'Event updated',
+            'event' => $event->user_id,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -80,6 +85,15 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        //
+        if (Auth::user()->id == $event->user_id) {
+            $event->delete();
+            return response([
+                'message' => 'Event deleted',
+            ], Response::HTTP_OK);
+        } else {
+            return response([
+                'message' => 'Unauthorized',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
     }
 }
