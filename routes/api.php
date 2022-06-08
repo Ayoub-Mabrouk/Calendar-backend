@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', fn (Request $request) => $request->user());
+    Route::get('/updateinfo', [UserController::class, 'update']);
 
     Route::group(['prefix' => 'calendars'], function () {
         Route::get('/', [CalendarController::class, 'index']);
