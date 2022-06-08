@@ -17,5 +17,6 @@ class Event extends Model
         'start_time',
         'end_time',
         'description',
+        'calendar_id'
     ];
 }

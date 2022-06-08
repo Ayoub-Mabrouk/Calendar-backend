@@ -27,16 +27,24 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/me', fn (Request $request) => $request->user());
 
     Route::group(['prefix' => 'calendars'], function () {
-        Route::get('/', fn (Request $request) => $request->user()->calendars->load('events'));
-        Route::get('/{calendar}', [CalendarController::class, 'show']);
+        Route::get('/', [CalendarController::class, 'index']);
+        Route::get('/{calendar_id}', [CalendarController::class, 'show']);
         Route::post('/', [CalendarController::class, 'store']);
-        Route::put('/{calendar}', [CalendarController::class, 'update']);
+        Route::put('/', [CalendarController::class, 'update']);
         Route::delete('/', [CalendarController::class, 'destroy']);
 
-        Route::get('{calendar}/events',  [EventController::class, 'index']);
-        Route::get('{calendar}/event/{event}', [EventController::class, 'show']);
-        Route::post('{calendar}/event', [EventController::class, 'store']);
-        Route::put('{calendar}/event', [EventController::class, 'update']);
-        Route::delete('/{calendar}/event', [EventController::class, 'destroy']);
+        Route::group(['prefix' => '{calendar_id}/events'], function () {
+            Route::get('/', [EventController::class, 'index']);
+            Route::get('/{event_id}', [EventController::class, 'show']);
+            Route::post('/', [EventController::class, 'store']);
+            Route::put('/', [EventController::class, 'update']);
+            Route::delete('/', [EventController::class, 'destroy']);
+        });
+
+        // Route::get('{calendar_id}/events',  [EventController::class, 'index']);
+        // Route::get('{calendar}/events/{event}', [EventController::class, 'show']);
+        // Route::post('{calendar}/events', [EventController::class, 'store']);
+        // Route::put('{calendar}/events', [EventController::class, 'update']);
+        // Route::delete('/{calendar}/events', [EventController::class, 'destroy']);
     });
 });

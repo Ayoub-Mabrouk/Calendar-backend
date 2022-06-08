@@ -6,6 +6,8 @@ use App\Models\Calendar;
 use App\Models\Event;
 use App\Models\User;
 use App\Policies\CalendarPolicy;
+use App\Policies\EventPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -30,10 +32,15 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        //calendar policy for user
         Gate::define('view-calendar', [CalendarPolicy::class, 'view']);
+        Gate::define('create-calendar', [CalendarPolicy::class, 'create']);
         Gate::define('delete-calendar', [CalendarPolicy::class, 'delete']);
-        Gate::define('store-event', 'App\Models\EventPolicy@store');
-        Gate::define('update-event', 'App\Models\EventPolicy@update');
-        Gate::define('delete-event', 'App\Models\EventPolicy@delete');
+        Gate::define('update-calendar', [CalendarPolicy::class, 'update']);
+        //event policy for user
+        Gate::define('view-event', [EventPolicy::class, 'view']);
+        Gate::define('create-event', [EventPolicy::class, 'create']);
+        Gate::define('delete-event', [EventPolicy::class, 'delete']);
+        Gate::define('update-event', [EventPolicy::class, 'update']);
     }
 }

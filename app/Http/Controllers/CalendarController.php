@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Calendar;
+use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +17,11 @@ class CalendarController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+        $calendars = $user->calendars->load('events');
+        return response(['calendars' => $calendars], Response::HTTP_OK);
     }
 
     /**
@@ -26,7 +31,6 @@ class CalendarController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -39,7 +43,7 @@ class CalendarController extends Controller
     {
         $calendar = Calendar::create([
             'name' => $request->name,
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id
         ]);
         return response([
             'message' => 'Calendar created',
@@ -53,12 +57,16 @@ class CalendarController extends Controller
      * @param  \App\Models\Calendar  $calendar
      * @return \Illuminate\Http\Response
      */
-    public function show(Calendar $calendar)
+    public function show(Request $request)
     {
-        if (Auth::user()->id == $calendar->user_id) {
-            return response($calendar, Response::HTTP_OK);
-        } else {
-            return response(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        try {
+            $calendar = Calendar::findOrFail($request->calendar_id);
+            if (Gate::allows('view-calendar', $calendar)) {
+                return response(['calendar' => $calendar], Response::HTTP_ACCEPTED);
+            }
+            return response(['message' => 'You are not authorized to see this calendar'], Response::HTTP_UNAUTHORIZED);
+        } catch (ModelNotFoundException $exception) {
+            return response(['message' => "Calender with id {$request->calendar_id} not found"], Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -80,13 +88,20 @@ class CalendarController extends Controller
      * @param  \App\Models\Calendar  $calendar
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Calendar $calendar)
+    public function update(Request $request)
     {
-        if (auth()->user()->id == $calendar->user_id) {
-            $calendar->update($request->all());
-            return response('Updated', Response::HTTP_ACCEPTED);
+        try {
+            $calendar = Calendar::findOrFail($request->id);
+            if (Gate::allows('update-calendar', $calendar)) {
+                $calendar->update([
+                    'name' => $request->name,
+                ]);
+                return response(['message' => 'Calendar updated successfully'], Response::HTTP_ACCEPTED);
+            }
+            return response(['message' => 'You are not authorized to update this calendar'], Response::HTTP_UNAUTHORIZED);
+        } catch (ModelNotFoundException $exception) {
+            return response(['message' => "Calender with id {$request->id} not found"], Response::HTTP_NOT_FOUND);
         }
-        return response('Unauthorized', Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -95,13 +110,17 @@ class CalendarController extends Controller
      * @param  \App\Models\Calendar  $calendar
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $calendar)
+    public function destroy(Request $request)
     {
-        $calendar = Calendar::findOrFail($calendar->id);
-        if (Gate::allows('calendar-delete', $calendar)) {
-            Calendar::destroy($calendar->id);
-            return response(['message' => 'Calendar deleted successfully'], Response::HTTP_OK);
+        try {
+            $calendar = Calendar::findOrFail($request->id);
+            if (Gate::allows('delete-calendar', $calendar)) {
+                Calendar::destroy($calendar->id);
+                return response(['message' => 'Calendar deleted successfully'], Response::HTTP_OK);
+            }
+            return response(['message' => 'You are not authorized to delete this calendar'], Response::HTTP_UNAUTHORIZED);
+        } catch (ModelNotFoundException $exception) {
+            return response(['message' => "Calender with id {$request->id} not found"], Response::HTTP_NOT_FOUND);
         }
-        return response(['message' => 'You are not authorized to delete this calendar'], Response::HTTP_FORBIDDEN);
     }
 }

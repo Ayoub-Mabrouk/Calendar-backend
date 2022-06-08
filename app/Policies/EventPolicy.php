@@ -3,10 +3,11 @@
 namespace App\Policies;
 
 use App\Models\Calendar;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class CalendarPolicy
+class EventPolicy
 {
     use HandlesAuthorization;
 
@@ -16,16 +17,16 @@ class CalendarPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user, Calendar $calendar)
+    public function viewAny(User $user)
     {
-        return $user->id === $calendar->user_id;
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Calendar  $calendar
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Calendar $calendar)
@@ -39,15 +40,16 @@ class CalendarPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user, Calendar $calendar)
     {
+        return $user->id === $calendar->user_id;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Calendar  $calendar
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, Calendar $calendar)
@@ -59,7 +61,7 @@ class CalendarPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Calendar  $calendar
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Calendar $calendar)
@@ -71,10 +73,10 @@ class CalendarPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Calendar  $calendar
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Calendar $calendar)
+    public function restore(User $user, Event $event)
     {
         //
     }
@@ -83,10 +85,10 @@ class CalendarPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Calendar  $calendar
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Calendar $calendar)
+    public function forceDelete(User $user, Event $event)
     {
         //
     }
